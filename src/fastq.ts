@@ -3,7 +3,7 @@ import { concurrency } from './util';
 import fastq from 'fastq';
 
 export default async function () {
-	const fqQueue = fastq.promise(async (task) => await task(), concurrency);
+	const fqQueue = fastq.promise((task) => task(), concurrency);
 	let i = 0;
 	let j = 0;
 	while (i < loops) {
