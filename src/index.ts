@@ -6,22 +6,28 @@
  * oha --no-tui -n 100 http://localhost:8787/henrygd-queue > /dev/null && oha -n 500 http://localhost:8787/henrygd-queue
  */
 
+import hgdWorker from './henrygd-queue';
+import pLimitWorker from './p-limit';
+import promiseQueueWorker from './promise-queue';
+import asyncQueueWorker from './async-queue';
+import queueWorker from './queue';
+import fastqWorker from './fastq';
+
 const workers = {
-	'henrygd-queue': () => import('./henrygd-queue'),
-	'p-limit': () => import('./p-limit'),
-	'promise-queue': () => import('./promise-queue'),
-	'async-queue': () => import('./async-queue'),
-	queue: () => import('./queue'),
-	fastq: () => import('./fastq'),
-} as Record<string, () => Promise<{ default: any }>>;
+	'henrygd-queue': hgdWorker,
+	'p-limit': pLimitWorker,
+	'promise-queue': promiseQueueWorker,
+	'async-queue': asyncQueueWorker,
+	queue: queueWorker,
+	fastq: fastqWorker,
+} as Record<string, () => Promise<Response>>;
 
 export default {
 	async fetch(request): Promise<Response> {
 		const path = request.url.split('/').at(-1) ?? '_';
 
 		if (path in workers) {
-			const { default: worker } = await workers[path]();
-			return worker.fetch();
+			return workers[path]();
 		}
 
 		return new Response(`Unknown path: ${path}`, { status: 404 });
