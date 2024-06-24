@@ -3,7 +3,9 @@
  * - Open a browser tab at http://localhost:8787/ to see your worker in action
  *
  * Benchmark:
- * oha --no-tui -n 100 http://localhost:8787/henrygd-queue > /dev/null && oha -n 500 http://localhost:8787/henrygd-queue
+ * oha --no-tui -n 100 http://localhost:8787/henrygd-queue > /dev/null && oha -n 1000 http://localhost:8787/henrygd-queue
+ *
+ * A queue is created to handle each request, so this tests creation time as well as throughput.
  */
 
 import hgdWorker from './henrygd-queue';

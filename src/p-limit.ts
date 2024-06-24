@@ -1,20 +1,15 @@
-import { checkEqual, loops } from './util';
+import { checkEqual, loops, promiseWithResolvers } from './util';
 import { concurrency } from './util';
 import pLimit from 'p-limit';
 
 export default async function () {
 	const limit = pLimit(concurrency);
-
-	let i = 0;
 	let j = 0;
-	const jobs = [] as Promise<any>[];
-	while (i < loops) {
-		i++;
-		jobs.push(limit(async () => j++));
+	const { promise, resolve } = promiseWithResolvers();
+	for (let i = 0; i < loops; i++) {
+		limit(async () => ++j === loops && resolve());
 	}
-	await Promise.all(jobs);
-	// make sure all promises resolved
-	checkEqual(i, j);
-
+	await promise;
+	checkEqual(j, loops);
 	return new Response(j.toString());
 }

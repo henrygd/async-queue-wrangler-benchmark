@@ -1,18 +1,15 @@
-import { checkEqual, loops } from './util';
+import { checkEqual, loops, promiseWithResolvers } from './util';
 import { concurrency } from './util';
 import { newQueue } from '@henrygd/queue';
 
 export default async function () {
 	const queue = newQueue(concurrency);
-	let i = 0;
 	let j = 0;
-	while (i < loops) {
-		i++;
-		queue.add(async () => j++);
+	const { promise, resolve } = promiseWithResolvers();
+	for (let i = 0; i < loops; i++) {
+		queue.add(async () => ++j === loops && resolve());
 	}
-	await queue.done();
-	// make sure all promises resolved
-	checkEqual(i, j);
-
+	await promise;
+	checkEqual(j, loops);
 	return new Response(String(j));
 }

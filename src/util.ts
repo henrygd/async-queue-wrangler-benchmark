@@ -6,3 +6,11 @@ export function checkEqual(a: any, b: any) {
 		throw new Error(`${a} !== ${b}`);
 	}
 }
+
+export function promiseWithResolvers() {
+	let resolve = undefined as unknown as () => void;
+	const promise = new Promise((res) => {
+		resolve = res as () => void;
+	});
+	return { promise, resolve };
+}
